@@ -308,8 +308,7 @@
   <div class="splash-icon">🛒</div>
   <h1>Da Silva<br>Grocery List</h1>
   <p>Who's shopping today?</p>
-  <input type="text" id="nameInput" placeholder="Type your name here..." maxlength="30" autocomplete="off" autocorrect="off" spellcheck="false" />
-  <button id="startBtn">Let's go!</button>
+  <button id="startBtn">👆 Tap here to enter your name</button>
 </div>
 
 <!-- HEADER -->
@@ -432,10 +431,10 @@
     document.getElementById('splash').style.display = 'none';
   }
 
-  document.getElementById('startBtn').onclick = () =>
-    startApp(document.getElementById('nameInput').value);
-  document.getElementById('nameInput').onkeydown = e =>
-    e.key === 'Enter' && startApp(e.target.value);
+  document.getElementById('startBtn').onclick = () => {
+    const name = prompt('What is your name?', currentUser || '');
+    if (name && name.trim()) startApp(name.trim());
+  };
 
   if (currentUser) {
     document.getElementById('displayName').textContent = currentUser;
@@ -443,8 +442,8 @@
   }
 
   document.getElementById('changeNameBtn').onclick = () => {
-    document.getElementById('nameInput').value = currentUser;
-    document.getElementById('splash').style.display = 'flex';
+    const name = prompt('Change your name:', currentUser || '');
+    if (name && name.trim()) startApp(name.trim());
   };
 
   // ── TABS ──────────────────────────────────────────────────────────────────
