@@ -32,40 +32,44 @@
       min-height: 100vh;
     }
 
-    /* ── SPLASH MODAL ───────────────────────── */
+    /* ── SPLASH ─────────────────────────────── */
     #splash {
-      position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 100;
-      background: rgba(0,0,0,0.45);
-      display: flex; align-items: center; justify-content: center;
-      padding: 24px;
+      min-height: 100vh;
+      background: #a8be6e;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 20px; padding: 32px;
     }
-    #splashCard {
-      background: #fff; border-radius: 22px;
-      padding: 36px 28px; width: 100%; max-width: 360px;
-      display: flex; flex-direction: column; align-items: center; gap: 16px;
-      box-shadow: 0 8px 40px rgba(0,0,0,0.22); text-align: center;
-    }
-    #splashCard .splash-icon { font-size: 3rem; }
-    #splashCard h1 {
+    #splash .splash-icon { font-size: 3.5rem; }
+    #splash h1 {
       font-family: 'Playfair Display', serif;
-      color: #7a9640; font-size: 1.6rem; line-height: 1.25;
+      color: #fff; font-size: clamp(1.6rem, 5vw, 2.4rem);
+      text-align: center; line-height: 1.25;
     }
-    #splashCard p { color: #6b7280; font-size: 0.95rem; }
-    #splashCard input {
-      width: 100%;
-      padding: 13px 18px; border-radius: 50px;
-      border: 2px solid #d1d5db;
-      font-family: 'Nunito', sans-serif; font-size: 1rem;
-      color: #2c1a0e; background: #f9fafb;
+    #splash p { color: rgba(255,255,255,0.9); font-size: 1rem; text-align: center; }
+    #splash input[type="text"] {
+      display: block;
+      width: 100%; max-width: 320px;
+      padding: 16px 20px;
+      border-radius: 50px;
+      border: 3px solid rgba(255,255,255,0.6);
+      font-family: 'Nunito', sans-serif; font-size: 1.1rem;
+      color: #2c1a0e; background: #fff;
+      -webkit-appearance: none;
     }
-    #splashCard input:focus { outline: none; border-color: #a8be6e; }
-    #splashCard button {
-      width: 100%; padding: 13px; border-radius: 50px; border: none;
-      background: #a8be6e; color: #fff;
-      font-family: 'Nunito', sans-serif; font-size: 1rem; font-weight: 700;
-      cursor: pointer; transition: background .2s;
+    #splash input[type="text"]:focus {
+      outline: none; border-color: #fff;
     }
-    #splashCard button:hover { background: #7a9640; }
+    #splash button {
+      display: block;
+      width: 100%; max-width: 320px;
+      padding: 15px; border-radius: 50px;
+      border: 2px solid #fff;
+      background: transparent; color: #fff;
+      font-family: 'Nunito', sans-serif; font-size: 1.1rem; font-weight: 700;
+      cursor: pointer;
+    }
+    #splash button:hover { background: #fff; color: #7a9640; }
 
     /* ── HEADER ─────────────────────────────── */
     header {
@@ -301,13 +305,11 @@
 
 <!-- SPLASH -->
 <div id="splash">
-  <div id="splashCard">
-    <div class="splash-icon">🛒</div>
-    <h1>Da Silva<br>Grocery List</h1>
-    <p>Who's shopping today?</p>
-    <input id="nameInput" type="text" placeholder="Enter your name..." maxlength="30" autocomplete="off" />
-    <button id="startBtn">Let's go!</button>
-  </div>
+  <div class="splash-icon">🛒</div>
+  <h1>Da Silva<br>Grocery List</h1>
+  <p>Who's shopping today?</p>
+  <input type="text" id="nameInput" placeholder="Type your name here..." maxlength="30" autocomplete="off" autocorrect="off" spellcheck="false" />
+  <button id="startBtn">Let's go!</button>
 </div>
 
 <!-- HEADER -->
