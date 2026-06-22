@@ -4,23 +4,33 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Da Silva Grocery List</title>
+
+  <!-- PWA -->
+  <meta name="theme-color" content="#7a9640" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Da Silva" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Nunito:wght@400;500;600;700&display=swap');
 
     :root {
-      --bg: #fdf6ee;
-      --surface: #ffffff;
-      --surface2: #fdf0e0;
-      --primary: #c0622a;
-      --primary-light: #e8845a;
-      --primary-faint: #fdeee5;
-      --accent: #4a7c59;
-      --accent-light: #d4ead9;
-      --text: #2c1a0e;
-      --text-muted: #8a6a50;
-      --border: #e8d5c0;
-      --shadow: 0 2px 12px rgba(150,80,30,0.10);
-      --radius: 14px;
+      --bg:            #f4f9eb;
+      --surface:       #ffffff;
+      --surface2:      #edf5db;
+      --primary:       #7a9640;
+      --primary-light: #a8be6e;
+      --primary-faint: #eef6d8;
+      --accent:        #5a8c48;
+      --accent-light:  #cce8b8;
+      --text:          #2c3a18;
+      --text-muted:    #6b7a50;
+      --border:        #ccdea0;
+      --shadow:        0 2px 12px rgba(80,120,30,0.12);
+      --radius:        14px;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -35,7 +45,7 @@
     /* ── SPLASH ─────────────────────────────── */
     #splash {
       min-height: 100vh;
-      background: #a8be6e;
+      background: linear-gradient(160deg, #8aac48 0%, #a8be6e 100%);
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
       gap: 20px; padding: 32px;
@@ -47,27 +57,14 @@
       text-align: center; line-height: 1.25;
     }
     #splash p { color: rgba(255,255,255,0.9); font-size: 1rem; text-align: center; }
-    #splash input[type="text"] {
-      display: block;
-      width: 100%; max-width: 320px;
-      padding: 16px 20px;
-      border-radius: 50px;
-      border: 3px solid rgba(255,255,255,0.6);
-      font-family: 'Nunito', sans-serif; font-size: 1.1rem;
-      color: #2c1a0e; background: #fff;
-      -webkit-appearance: none;
-    }
-    #splash input[type="text"]:focus {
-      outline: none; border-color: #fff;
-    }
     #splash button {
       display: block;
       width: 100%; max-width: 320px;
-      padding: 15px; border-radius: 50px;
+      padding: 16px; border-radius: 50px;
       border: 2px solid #fff;
-      background: transparent; color: #fff;
+      background: rgba(255,255,255,0.2); color: #fff;
       font-family: 'Nunito', sans-serif; font-size: 1.1rem; font-weight: 700;
-      cursor: pointer;
+      cursor: pointer; transition: background .2s;
     }
     #splash button:hover { background: #fff; color: #7a9640; }
 
@@ -89,7 +86,7 @@
       margin-top: 10px; display: flex; align-items: center; gap: 8px;
       font-size: .88rem;
     }
-    header .user-bar strong { color: #ffe5c8; }
+    header .user-bar strong { color: #d4f0a0; }
     header .user-bar button {
       background: rgba(255,255,255,0.18); border: none; border-radius: 20px;
       color: #fff; padding: 3px 12px; font-size: .8rem; cursor: pointer;
@@ -105,7 +102,7 @@
     }
     .tabs button {
       flex: 1; padding: 13px; border: none; background: none;
-      font-family: 'Nunito', sans-serif; font-size: .95rem; font-weight: 600;
+      font-family: 'Nunito', sans-serif; font-size: .9rem; font-weight: 600;
       color: var(--text-muted); cursor: pointer; border-bottom: 3px solid transparent;
       margin-bottom: -2px; transition: color .2s, border-color .2s;
     }
@@ -128,12 +125,9 @@
       flex: 1; min-width: 120px;
       padding: 11px 14px; border-radius: 50px; border: 1.5px solid var(--border);
       font-family: 'Nunito', sans-serif; font-size: .95rem; color: var(--text);
-      background: var(--bg); outline: none;
-      transition: border-color .2s;
+      background: var(--bg); outline: none; transition: border-color .2s;
     }
-    .add-form input[type="text"]:focus, .add-form select:focus {
-      border-color: var(--primary);
-    }
+    .add-form input[type="text"]:focus, .add-form select:focus { border-color: var(--primary); }
     .add-form input[type="number"] {
       width: 80px; padding: 11px 10px; border-radius: 50px;
       border: 1.5px solid var(--border); font-family: 'Nunito', sans-serif;
@@ -165,33 +159,32 @@
       padding: 13px 15px; margin-bottom: 8px;
       display: flex; align-items: center; gap: 12px;
       box-shadow: var(--shadow); border: 1.5px solid transparent;
-      transition: opacity .25s, transform .25s, border-color .2s;
+      transition: opacity .25s, border-color .2s;
       animation: slideIn .22s ease;
     }
     @keyframes slideIn {
       from { opacity: 0; transform: translateY(-8px); }
       to   { opacity: 1; transform: translateY(0); }
     }
-    .item-card.ticked {
-      opacity: .55; background: var(--surface2);
-      border-color: var(--accent-light);
-    }
+    .item-card.ticked { opacity: .55; background: var(--surface2); border-color: var(--accent-light); }
     .item-card input[type="checkbox"] {
       width: 22px; height: 22px; accent-color: var(--accent);
-      cursor: pointer; flex-shrink: 0; border-radius: 6px;
+      cursor: pointer; flex-shrink: 0;
     }
     .item-info { flex: 1; min-width: 0; }
-    .item-name {
-      font-weight: 600; font-size: 1rem;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
+    .item-name { font-weight: 600; font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .item-card.ticked .item-name { text-decoration: line-through; color: var(--text-muted); }
     .item-meta { font-size: .8rem; color: var(--text-muted); margin-top: 2px; }
     .item-qty {
       background: var(--primary-faint); color: var(--primary);
-      border-radius: 20px; padding: 2px 10px; font-size: .8rem; font-weight: 700;
-      flex-shrink: 0;
+      border-radius: 20px; padding: 2px 10px; font-size: .8rem; font-weight: 700; flex-shrink: 0;
     }
+    .item-fav {
+      background: none; border: none; cursor: pointer;
+      font-size: 1.2rem; padding: 4px; border-radius: 6px; flex-shrink: 0;
+      transition: transform .15s; line-height: 1;
+    }
+    .item-fav:hover { transform: scale(1.25); }
     .item-delete {
       background: none; border: none; cursor: pointer; color: var(--text-muted);
       font-size: 1.1rem; padding: 4px; border-radius: 6px; flex-shrink: 0;
@@ -199,10 +192,8 @@
     }
     .item-delete:hover { color: var(--primary); background: var(--primary-faint); }
 
-    /* ── CLEAR TICKED ────────────────────────── */
-    .action-bar {
-      display: flex; justify-content: flex-end; margin-bottom: 12px;
-    }
+    /* ── ACTION BAR ──────────────────────────── */
+    .action-bar { display: flex; justify-content: flex-end; margin-bottom: 12px; }
     .action-bar button {
       background: none; border: 1.5px solid var(--border); border-radius: 50px;
       padding: 7px 18px; color: var(--text-muted); font-family: 'Nunito', sans-serif;
@@ -211,75 +202,24 @@
     .action-bar button:hover { border-color: var(--primary); color: var(--primary); }
 
     /* ── EMPTY STATE ─────────────────────────── */
-    .empty {
-      text-align: center; padding: 40px 20px; color: var(--text-muted);
-    }
+    .empty { text-align: center; padding: 40px 20px; color: var(--text-muted); }
     .empty .icon { font-size: 2.8rem; margin-bottom: 12px; }
     .empty p { font-size: .95rem; }
 
-    /* ── HISTORY ─────────────────────────────── */
-    .history-header {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 16px;
-    }
-    .history-header h2 {
-      font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--primary);
-    }
-    .history-filter select {
-      padding: 7px 14px; border-radius: 50px; border: 1.5px solid var(--border);
-      font-family: 'Nunito', sans-serif; font-size: .85rem; color: var(--text);
-      background: var(--bg); outline: none; cursor: pointer;
-    }
-    .history-clear {
-      background: none; border: 1.5px solid var(--border); border-radius: 50px;
-      padding: 7px 16px; color: var(--text-muted); font-family: 'Nunito', sans-serif;
-      font-size: .82rem; cursor: pointer; transition: border-color .2s, color .2s;
-    }
-    .history-clear:hover { border-color: var(--primary); color: var(--primary); }
-
-    .history-item {
-      background: var(--surface); border-radius: var(--radius);
-      padding: 12px 15px; margin-bottom: 8px;
-      display: flex; justify-content: space-between; align-items: center;
-      box-shadow: var(--shadow); font-size: .92rem;
-    }
-    .history-item .h-name { font-weight: 600; }
-    .history-item .h-meta { font-size: .78rem; color: var(--text-muted); margin-top: 2px; }
-    .history-badge {
-      background: var(--accent-light); color: var(--accent);
-      border-radius: 20px; padding: 3px 12px; font-size: .78rem; font-weight: 700;
-      white-space: nowrap;
-    }
-
-    /* ── FAV BUTTON (on ticked items) ───────────── */
-    .item-fav {
-      background: none; border: none; cursor: pointer;
-      font-size: 1.2rem; padding: 4px; border-radius: 6px; flex-shrink: 0;
-      transition: transform .15s;
-      line-height: 1;
-    }
-    .item-fav:hover { transform: scale(1.25); }
-
-    /* ── FAVOURITES PANE ─────────────────────────── */
-    .favs-header {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 16px;
-    }
-    .favs-header h2 {
-      font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--primary);
-    }
+    /* ── FAVOURITES ──────────────────────────── */
+    .favs-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .favs-header h2 { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--primary); }
     .favs-clear {
       background: none; border: 1.5px solid var(--border); border-radius: 50px;
       padding: 7px 16px; color: var(--text-muted); font-family: 'Nunito', sans-serif;
       font-size: .82rem; cursor: pointer; transition: border-color .2s, color .2s;
     }
     .favs-clear:hover { border-color: var(--primary); color: var(--primary); }
-
     .fav-card {
       background: var(--surface); border-radius: var(--radius);
       padding: 13px 15px; margin-bottom: 8px;
       display: flex; align-items: center; gap: 12px;
-      box-shadow: var(--shadow); border: 1.5px solid #ffe5a0;
+      box-shadow: var(--shadow); border: 1.5px solid var(--accent-light);
       animation: slideIn .22s ease;
     }
     .fav-card .fav-star { font-size: 1.3rem; flex-shrink: 0; }
@@ -299,6 +239,34 @@
       transition: color .15s, background .15s;
     }
     .fav-remove:hover { color: var(--primary); background: var(--primary-faint); }
+
+    /* ── HISTORY ─────────────────────────────── */
+    .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .history-header h2 { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--primary); }
+    .history-filter select {
+      padding: 7px 14px; border-radius: 50px; border: 1.5px solid var(--border);
+      font-family: 'Nunito', sans-serif; font-size: .85rem; color: var(--text);
+      background: var(--bg); outline: none; cursor: pointer;
+    }
+    .history-clear {
+      background: none; border: 1.5px solid var(--border); border-radius: 50px;
+      padding: 7px 16px; color: var(--text-muted); font-family: 'Nunito', sans-serif;
+      font-size: .82rem; cursor: pointer; transition: border-color .2s, color .2s;
+    }
+    .history-clear:hover { border-color: var(--primary); color: var(--primary); }
+    .history-item {
+      background: var(--surface); border-radius: var(--radius);
+      padding: 12px 15px; margin-bottom: 8px;
+      display: flex; justify-content: space-between; align-items: center;
+      box-shadow: var(--shadow); font-size: .92rem;
+    }
+    .history-item .h-name { font-weight: 600; }
+    .history-item .h-meta { font-size: .78rem; color: var(--text-muted); margin-top: 2px; }
+    .history-badge {
+      background: var(--accent-light); color: var(--accent);
+      border-radius: 20px; padding: 3px 12px; font-size: .78rem; font-weight: 700;
+      white-space: nowrap;
+    }
   </style>
 </head>
 <body>
@@ -307,8 +275,8 @@
 <div id="splash">
   <div class="splash-icon">🛒</div>
   <h1>Da Silva<br>Grocery List</h1>
-  <p>Who's shopping today?</p>
-  <button id="startBtn">👆 Tap here to enter your name</button>
+  <p>Tap the button to get started</p>
+  <button id="startBtn">👆 Enter your name</button>
 </div>
 
 <!-- HEADER -->
@@ -336,7 +304,6 @@
 
   <!-- SHOPPING TAB -->
   <div id="shopPane">
-
     <div class="add-form">
       <h2>+ Add to List</h2>
       <div class="form-row">
@@ -358,13 +325,10 @@
         <button onclick="addItem()">Add</button>
       </div>
     </div>
-
     <div class="action-bar">
       <button onclick="clearTicked()">Remove ticked</button>
     </div>
-
     <div id="listContainer"></div>
-
   </div>
 
   <!-- FAVOURITES TAB -->
@@ -395,7 +359,6 @@
 </main>
 
 <script>
-  // ── STORAGE KEY (unique per household) ───────────────────────────────────
   const STORE_KEY = 'nel_familie_inkopie_v1';
   const HIST_KEY  = 'nel_familie_geskiedenis_v1';
   const NAME_KEY  = 'nel_familie_naam_v1';
@@ -422,9 +385,9 @@
   function saveHist() { localStorage.setItem(HIST_KEY,  JSON.stringify(history)); }
   function saveFavs() { localStorage.setItem(FAVS_KEY,  JSON.stringify(favourites)); }
 
-  // ── SPLASH ────────────────────────────────────────────────────────────────
+  // ── SPLASH ──────────────────────────────────────────────────────────────
   function startApp(name) {
-    if (!name.trim()) return;
+    if (!name || !name.trim()) return;
     currentUser = name.trim();
     localStorage.setItem(NAME_KEY, currentUser);
     document.getElementById('displayName').textContent = currentUser;
@@ -446,7 +409,7 @@
     if (name && name.trim()) startApp(name.trim());
   };
 
-  // ── TABS ──────────────────────────────────────────────────────────────────
+  // ── TABS ────────────────────────────────────────────────────────────────
   function showTab(tab) {
     document.getElementById('shopPane').style.display    = tab === 'shop'    ? '' : 'none';
     document.getElementById('favsPane').style.display    = tab === 'favs'    ? '' : 'none';
@@ -458,73 +421,42 @@
     if (tab === 'favs')    renderFavourites();
   }
 
-  // ── ADD ITEM ──────────────────────────────────────────────────────────────
+  // ── ADD ITEM ─────────────────────────────────────────────────────────────
   function addItem() {
     const name = document.getElementById('itemName').value.trim();
     const qty  = parseInt(document.getElementById('itemQty').value) || 1;
     const cat  = document.getElementById('itemCat').value;
     if (!name) { document.getElementById('itemName').focus(); return; }
-    items.push({
-      id: Date.now(),
-      name, qty, cat,
-      ticked: false,
-      addedBy: currentUser,
-      addedAt: new Date().toLocaleString('en-ZA')
-    });
+    items.push({ id: Date.now(), name, qty, cat, ticked: false, addedBy: currentUser, addedAt: new Date().toLocaleString('en-ZA') });
     save();
     document.getElementById('itemName').value = '';
     document.getElementById('itemQty').value = 1;
     renderList();
   }
+  document.getElementById('itemName').onkeydown = e => e.key === 'Enter' && addItem();
 
-  document.getElementById('itemName').onkeydown = e =>
-    e.key === 'Enter' && addItem();
-
-  // ── TICK / DELETE ─────────────────────────────────────────────────────────
+  // ── TICK / DELETE ────────────────────────────────────────────────────────
   function toggleTick(id) {
     const item = items.find(i => i.id === id);
     if (!item) return;
     item.ticked = !item.ticked;
-    if (item.ticked) {
-      history.unshift({ ...item, boughtBy: currentUser, boughtAt: new Date().toLocaleString('en-ZA') });
-      saveHist();
-    }
-    save();
-    renderList();
+    if (item.ticked) { history.unshift({ ...item, boughtBy: currentUser, boughtAt: new Date().toLocaleString('en-ZA') }); saveHist(); }
+    save(); renderList();
   }
+  function deleteItem(id) { items = items.filter(i => i.id !== id); save(); renderList(); }
+  function clearTicked()  { items = items.filter(i => !i.ticked); save(); renderList(); }
 
-  function deleteItem(id) {
-    items = items.filter(i => i.id !== id);
-    save();
-    renderList();
-  }
-
-  function clearTicked() {
-    items = items.filter(i => !i.ticked);
-    save();
-    renderList();
-  }
-
-  // ── RENDER LIST ───────────────────────────────────────────────────────────
+  // ── RENDER LIST ──────────────────────────────────────────────────────────
   function renderList() {
     const container = document.getElementById('listContainer');
     container.innerHTML = '';
-
-    const active  = items.filter(i => !i.ticked);
-    const ticked  = items.filter(i =>  i.ticked);
-    const ordered = [...active, ...ticked];
-
+    const ordered = [...items.filter(i => !i.ticked), ...items.filter(i => i.ticked)];
     if (ordered.length === 0) {
       container.innerHTML = `<div class="empty"><div class="icon">🛒</div><p>List is empty — add some items!</p></div>`;
       return;
     }
-
     const groups = {};
-    ordered.forEach(item => {
-      if (!groups[item.cat]) groups[item.cat] = [];
-      groups[item.cat].push(item);
-    });
-
+    ordered.forEach(item => { if (!groups[item.cat]) groups[item.cat] = []; groups[item.cat].push(item); });
     CATS.forEach(cat => {
       if (!groups[cat.id]) return;
       const grp = document.createElement('div');
@@ -534,9 +466,7 @@
         const card = document.createElement('div');
         card.className = 'item-card' + (item.ticked ? ' ticked' : '');
         const alreadyFav = favourites.some(f => f.name === item.name && f.cat === item.cat);
-        const favBtn = item.ticked
-          ? `<button class="item-fav" onclick="addToFavourites(${item.id})" title="${alreadyFav ? 'Already in Favourites' : 'Save to Favourites'}">${alreadyFav ? '⭐' : '☆'}</button>`
-          : '';
+        const favBtn = item.ticked ? `<button class="item-fav" onclick="addToFavourites(${item.id})" title="${alreadyFav ? 'Already in Favourites' : 'Save to Favourites'}">${alreadyFav ? '⭐' : '☆'}</button>` : '';
         card.innerHTML = `
           <input type="checkbox" ${item.ticked ? 'checked' : ''} onchange="toggleTick(${item.id})" />
           <div class="item-info">
@@ -552,91 +482,25 @@
     });
   }
 
-  // ── RENDER HISTORY ────────────────────────────────────────────────────────
-  function renderHistory() {
-    const filter = document.getElementById('historyFilter').value;
-    const container = document.getElementById('historyContainer');
-    container.innerHTML = '';
-
-    // Populate filter dropdown
-    const people = [...new Set(history.map(h => h.boughtBy))];
-    const sel = document.getElementById('historyFilter');
-    const prev = sel.value;
-    sel.innerHTML = '<option value="all">Everyone</option>';
-    people.forEach(p => {
-      const o = document.createElement('option');
-      o.value = p; o.textContent = p;
-      if (p === prev) o.selected = true;
-      sel.appendChild(o);
-    });
-
-    const filtered = filter === 'all' ? history : history.filter(h => h.boughtBy === filter);
-
-    if (filtered.length === 0) {
-      container.innerHTML = `<div class="empty"><div class="icon">📋</div><p>No purchase history yet.</p></div>`;
-      return;
-    }
-
-    filtered.forEach(h => {
-      const div = document.createElement('div');
-      div.className = 'history-item';
-      div.innerHTML = `
-        <div>
-          <div class="h-name">${escHtml(h.name)} <span style="color:var(--text-muted);font-weight:400;">x${h.qty}</span></div>
-          <div class="h-meta">${escHtml(h.cat)} · Bought by ${escHtml(h.boughtBy)} · ${h.boughtAt}</div>
-        </div>
-        <div class="history-badge">✓ Bought</div>`;
-      container.appendChild(div);
-    });
-  }
-
-  function clearHistory() {
-    if (!confirm('Are you sure you want to clear the history?')) return;
-    history = [];
-    saveHist();
-    renderHistory();
-  }
-
   // ── FAVOURITES ────────────────────────────────────────────────────────────
   function addToFavourites(itemId) {
     const item = items.find(i => i.id === itemId);
     if (!item) return;
-    const already = favourites.some(f => f.name === item.name && f.cat === item.cat);
-    if (already) return;
+    if (favourites.some(f => f.name === item.name && f.cat === item.cat)) return;
     favourites.push({ favId: Date.now(), name: item.name, qty: item.qty, cat: item.cat });
-    saveFavs();
-    renderList(); // refresh star state
+    saveFavs(); renderList();
   }
-
-  function removeFromFavourites(favId) {
-    favourites = favourites.filter(f => f.favId !== favId);
-    saveFavs();
-    renderFavourites();
-    renderList(); // refresh star state
-  }
-
+  function removeFromFavourites(favId) { favourites = favourites.filter(f => f.favId !== favId); saveFavs(); renderFavourites(); renderList(); }
   function addFavToList(favId) {
     const fav = favourites.find(f => f.favId === favId);
     if (!fav) return;
-    items.push({
-      id: Date.now(),
-      name: fav.name, qty: fav.qty, cat: fav.cat,
-      ticked: false,
-      addedBy: currentUser,
-      addedAt: new Date().toLocaleString('en-ZA')
-    });
-    save();
-    showTab('shop');
+    items.push({ id: Date.now(), name: fav.name, qty: fav.qty, cat: fav.cat, ticked: false, addedBy: currentUser, addedAt: new Date().toLocaleString('en-ZA') });
+    save(); showTab('shop');
   }
-
   function clearFavourites() {
-    if (!confirm('Are you sure you want to clear all favourites?')) return;
-    favourites = [];
-    saveFavs();
-    renderFavourites();
-    renderList();
+    if (!confirm('Clear all favourites?')) return;
+    favourites = []; saveFavs(); renderFavourites(); renderList();
   }
-
   function renderFavourites() {
     const container = document.getElementById('favsContainer');
     container.innerHTML = '';
@@ -645,10 +509,7 @@
       return;
     }
     const groups = {};
-    favourites.forEach(f => {
-      if (!groups[f.cat]) groups[f.cat] = [];
-      groups[f.cat].push(f);
-    });
+    favourites.forEach(f => { if (!groups[f.cat]) groups[f.cat] = []; groups[f.cat].push(f); });
     CATS.forEach(cat => {
       if (!groups[cat.id]) return;
       const grp = document.createElement('div');
@@ -664,26 +525,59 @@
             <div class="fav-meta">${escHtml(fav.cat)} · qty: ${fav.qty}</div>
           </div>
           <button class="fav-add-btn" onclick="addFavToList(${fav.favId})">+ Add to List</button>
-          <button class="fav-remove" onclick="removeFromFavourites(${fav.favId})" title="Remove from Favourites">✕</button>`;
+          <button class="fav-remove" onclick="removeFromFavourites(${fav.favId})" title="Remove">✕</button>`;
         grp.appendChild(card);
       });
       container.appendChild(grp);
     });
   }
 
+  // ── HISTORY ───────────────────────────────────────────────────────────────
+  function renderHistory() {
+    const filter = document.getElementById('historyFilter').value;
+    const container = document.getElementById('historyContainer');
+    container.innerHTML = '';
+    const people = [...new Set(history.map(h => h.boughtBy))];
+    const sel = document.getElementById('historyFilter');
+    const prev = sel.value;
+    sel.innerHTML = '<option value="all">Everyone</option>';
+    people.forEach(p => { const o = document.createElement('option'); o.value = p; o.textContent = p; if (p === prev) o.selected = true; sel.appendChild(o); });
+    const filtered = filter === 'all' ? history : history.filter(h => h.boughtBy === filter);
+    if (filtered.length === 0) {
+      container.innerHTML = `<div class="empty"><div class="icon">📋</div><p>No purchase history yet.</p></div>`;
+      return;
+    }
+    filtered.forEach(h => {
+      const div = document.createElement('div');
+      div.className = 'history-item';
+      div.innerHTML = `
+        <div>
+          <div class="h-name">${escHtml(h.name)} <span style="color:var(--text-muted);font-weight:400;">x${h.qty}</span></div>
+          <div class="h-meta">${escHtml(h.cat)} · Bought by ${escHtml(h.boughtBy)} · ${h.boughtAt}</div>
+        </div>
+        <div class="history-badge">✓ Bought</div>`;
+      container.appendChild(div);
+    });
+  }
+  function clearHistory() { if (!confirm('Clear all history?')) return; history = []; saveHist(); renderHistory(); }
+
   function escHtml(str) {
     return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
-  // ── DOWNLOAD ─────────────────────────────────────────────────────────────
+  // ── DOWNLOAD ──────────────────────────────────────────────────────────────
   function downloadApp() {
-    const html = document.documentElement.outerHTML;
-    const blob = new Blob([html], { type: 'text/html' });
+    const blob = new Blob([document.documentElement.outerHTML], { type: 'text/html' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     a.download = 'da-silva-grocery-list.html';
     a.click();
     URL.revokeObjectURL(a.href);
+  }
+
+  // ── SERVICE WORKER ────────────────────────────────────────────────────────
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
   }
 
   // ── INIT ──────────────────────────────────────────────────────────────────
