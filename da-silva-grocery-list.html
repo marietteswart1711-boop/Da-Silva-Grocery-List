@@ -321,6 +321,13 @@
           <option value="Household">🧹 Household</option>
           <option value="Frozen">❄️ Frozen</option>
           <option value="Other">🛒 Other</option>
+          <option value="Bar">🍷 Bar</option>
+          <option value="Camping">⛺ Camping</option>
+          <option value="Vehicles">🚗 Vehicles</option>
+          <option value="Garden">🌱 Garden</option>
+          <option value="Gifts">🎁 Gifts</option>
+          <option value="Clothing">👕 Clothing</option>
+          <option value="Electrical">🔌 Electrical</option>
         </select>
         <button onclick="addItem()">Add</button>
       </div>
@@ -361,7 +368,7 @@
 <script>
   const STORE_KEY = 'nel_familie_inkopie_v1';
   const HIST_KEY  = 'nel_familie_geskiedenis_v1';
-  const NAME_KEY  = 'nel_familie_naam_v1';
+  const NAME_KEY  = 'da_silva_naam_v2';
   const FAVS_KEY  = 'da_silva_favourites_v1';
 
   const CATS = [
@@ -373,7 +380,14 @@
     { id: 'Personal Care',  emoji: '🧴' },
     { id: 'Household',      emoji: '🧹' },
     { id: 'Frozen',         emoji: '❄️' },
-    { id: 'Other',          emoji: '🛒' },
+    { id: 'Other',       emoji: '🛒' },
+    { id: 'Bar',         emoji: '🍷' },
+    { id: 'Camping',     emoji: '⛺' },
+    { id: 'Vehicles',    emoji: '🚗' },
+    { id: 'Garden',      emoji: '🌱' },
+    { id: 'Gifts',       emoji: '🎁' },
+    { id: 'Clothing',    emoji: '👕' },
+    { id: 'Electrical',  emoji: '🔌' },
   ];
 
   let currentUser = localStorage.getItem(NAME_KEY) || '';
