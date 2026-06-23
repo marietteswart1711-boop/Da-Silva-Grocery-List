@@ -312,22 +312,23 @@
       </div>
       <div class="form-row">
         <select id="itemCat">
-          <option value="Produce">🥦 Produce</option>
-          <option value="Meat & Fish">🥩 Meat & Fish</option>
-          <option value="Dairy">🧀 Dairy</option>
-          <option value="Bakery">🍞 Bakery</option>
-          <option value="Pantry">🥫 Pantry</option>
-          <option value="Personal Care">🧴 Personal Care</option>
-          <option value="Household">🧹 Household</option>
-          <option value="Frozen">❄️ Frozen</option>
           <option value="Other">🛒 Other</option>
+          <option value="Bakery">🍞 Bakery</option>
           <option value="Bar">🍷 Bar</option>
           <option value="Camping">⛺ Camping</option>
-          <option value="Vehicles">🚗 Vehicles</option>
+          <option value="Clothing">👕 Clothing</option>
+          <option value="Dairy">🧀 Dairy</option>
+          <option value="Electrical">🔌 Electrical</option>
+          <option value="Frozen">❄️ Frozen</option>
           <option value="Garden">🌱 Garden</option>
           <option value="Gifts">🎁 Gifts</option>
-          <option value="Clothing">👕 Clothing</option>
-          <option value="Electrical">🔌 Electrical</option>
+          <option value="Household">🧹 Household</option>
+          <option value="Meat & Fish">🥩 Meat & Fish</option>
+          <option value="Pantry">🥫 Pantry</option>
+          <option value="Personal Care">🧴 Personal Care</option>
+          <option value="Pets">🐾 Pets</option>
+          <option value="Produce">🥦 Produce</option>
+          <option value="Vehicles">🚗 Vehicles</option>
         </select>
         <button onclick="addItem()">Add</button>
       </div>
@@ -372,22 +373,23 @@
   const FAVS_KEY  = 'da_silva_favourites_v1';
 
   const CATS = [
-    { id: 'Produce',        emoji: '🥦' },
-    { id: 'Meat & Fish',    emoji: '🥩' },
-    { id: 'Dairy',          emoji: '🧀' },
-    { id: 'Bakery',         emoji: '🍞' },
-    { id: 'Pantry',         emoji: '🥫' },
-    { id: 'Personal Care',  emoji: '🧴' },
-    { id: 'Household',      emoji: '🧹' },
-    { id: 'Frozen',         emoji: '❄️' },
-    { id: 'Other',       emoji: '🛒' },
-    { id: 'Bar',         emoji: '🍷' },
-    { id: 'Camping',     emoji: '⛺' },
-    { id: 'Vehicles',    emoji: '🚗' },
-    { id: 'Garden',      emoji: '🌱' },
-    { id: 'Gifts',       emoji: '🎁' },
-    { id: 'Clothing',    emoji: '👕' },
-    { id: 'Electrical',  emoji: '🔌' },
+    { id: 'Other',         emoji: '🛒' },
+    { id: 'Bakery',        emoji: '🍞' },
+    { id: 'Bar',           emoji: '🍷' },
+    { id: 'Camping',       emoji: '⛺' },
+    { id: 'Clothing',      emoji: '👕' },
+    { id: 'Dairy',         emoji: '🧀' },
+    { id: 'Electrical',    emoji: '🔌' },
+    { id: 'Frozen',        emoji: '❄️' },
+    { id: 'Garden',        emoji: '🌱' },
+    { id: 'Gifts',         emoji: '🎁' },
+    { id: 'Household',     emoji: '🧹' },
+    { id: 'Meat & Fish',   emoji: '🥩' },
+    { id: 'Pantry',        emoji: '🥫' },
+    { id: 'Personal Care', emoji: '🧴' },
+    { id: 'Pets',          emoji: '🐾' },
+    { id: 'Produce',       emoji: '🥦' },
+    { id: 'Vehicles',      emoji: '🚗' },
   ];
 
   let currentUser = localStorage.getItem(NAME_KEY) || '';
