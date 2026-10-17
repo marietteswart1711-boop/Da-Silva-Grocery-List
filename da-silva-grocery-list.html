@@ -1,40 +1,925 @@
-🛒
-Da Silva Grocery List
-Enter your name so the family knows who added or bought what
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Da Silva Grocery List</title>
 
-Let's go!
-🛒 Da Silva Grocery List
+  <!-- PWA -->
+  <meta name="theme-color" content="#7a9640" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Da Silva" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
 
-Connecting…
-⬇ Download
-Shopping as:
-—
-Change
-🛒 Shopping List
-⭐ Favourites
-📋 History
-+ Add to List
+  <script>
+    const FIREBASE_CONFIG = {
+      apiKey:            "AIzaSyD_vrgY8hFR1oeMyDR-FOiRrG14WPo_LAQ",
+      authDomain:        "family-grocery-list-c2b40.firebaseapp.com",
+      databaseURL:       "https://family-grocery-list-c2b40-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId:         "family-grocery-list-c2b40",
+      storageBucket:     "family-grocery-list-c2b40.firebasestorage.app",
+      messagingSenderId: "964615300709",
+      appId:             "1:964615300709:web:ac6fd754c9ef014b25088c"
+    };
+  </script>
 
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
-          🛒 Other
-          🍞 Bakery
-          🍷 Bar
-          ⛺ Camping
-          👕 Clothing
-          🧀 Dairy
-          🔌 Electrical
-          ❄️ Frozen
-          🌱 Garden
-          🎁 Gifts
-          🧹 Household
-          🥩 Meat & Fish
-          🥫 Pantry
-          🧴 Personal Care
-          🐾 Pets
-          💊 Pharmacy
-          🥦 Produce
-          🚗 Vehicles
-        
-Add
-Remove ticked
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Nunito:wght@400;500;600;700&display=swap');
 
+    :root {
+      --bg:            #f4f9eb;
+      --surface:       #ffffff;
+      --surface2:      #edf5db;
+      --primary:       #7a9640;
+      --primary-light: #a8be6e;
+      --primary-faint: #eef6d8;
+      --accent:        #5a8c48;
+      --accent-light:  #cce8b8;
+      --text:          #2c3a18;
+      --text-muted:    #6b7a50;
+      --border:        #ccdea0;
+      --shadow:        0 2px 12px rgba(80,120,30,0.12);
+      --radius:        14px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── SPLASH ─────────────────────────────── */
+    #splash {
+      min-height: 100vh;
+      background: linear-gradient(160deg, #8aac48 0%, #a8be6e 100%);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 20px; padding: 32px;
+    }
+    #splash .splash-icon { font-size: 3.5rem; }
+    #splash h1 {
+      font-family: 'Playfair Display', serif;
+      color: #fff; font-size: clamp(1.6rem, 5vw, 2.4rem);
+      text-align: center; line-height: 1.25;
+    }
+    #splash p { color: rgba(255,255,255,0.9); font-size: 1rem; text-align: center; }
+    #splash button {
+      display: block;
+      width: 100%; max-width: 320px;
+      padding: 16px; border-radius: 50px;
+      border: 2px solid #fff;
+      background: rgba(255,255,255,0.2); color: #fff;
+      font-family: 'Nunito', sans-serif; font-size: 1.1rem; font-weight: 700;
+      cursor: pointer; transition: background .2s;
+    }
+    #splash button:hover { background: #fff; color: #7a9640; }
+    #splash input {
+      display: block; width: 100%; max-width: 320px; padding: 15px 20px;
+      border-radius: 50px; border: 2px solid #fff; background: #fff; color: #3d4a26;
+      font-family: 'Nunito', sans-serif; font-size: 1.05rem; text-align: center; outline: none;
+    }
+
+    /* ── HEADER ─────────────────────────────── */
+    header {
+      background: var(--primary);
+      color: #fff; padding: 18px 20px 14px;
+      position: sticky; top: 0; z-index: 50;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.2rem, 4vw, 1.7rem); line-height: 1.2;
+    }
+    header .sub {
+      font-size: .82rem; color: rgba(255,255,255,0.78); margin-top: 2px;
+    }
+    header .user-bar {
+      margin-top: 10px; display: flex; align-items: center; gap: 8px;
+      font-size: .88rem;
+    }
+    header .user-bar strong { color: #d4f0a0; }
+    header .user-bar button {
+      background: rgba(255,255,255,0.18); border: none; border-radius: 20px;
+      color: #fff; padding: 3px 12px; font-size: .8rem; cursor: pointer;
+      font-family: 'Nunito', sans-serif;
+    }
+    header .user-bar button:hover { background: rgba(255,255,255,0.3); }
+
+    /* ── TABS ────────────────────────────────── */
+    .tabs {
+      display: flex; background: var(--surface);
+      border-bottom: 2px solid var(--border);
+      position: sticky; top: 95px; z-index: 40;
+    }
+    .tabs button {
+      flex: 1; padding: 13px; border: none; background: none;
+      font-family: 'Nunito', sans-serif; font-size: .9rem; font-weight: 600;
+      color: var(--text-muted); cursor: pointer; border-bottom: 3px solid transparent;
+      margin-bottom: -2px; transition: color .2s, border-color .2s;
+    }
+    .tabs button.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+    /* ── MAIN ────────────────────────────────── */
+    main { max-width: 640px; margin: 0 auto; padding: 20px 16px 80px; }
+
+    /* ── ADD FORM ────────────────────────────── */
+    .add-form {
+      background: var(--surface); border-radius: var(--radius);
+      padding: 18px; box-shadow: var(--shadow); margin-bottom: 22px;
+    }
+    .add-form h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem; margin-bottom: 14px; color: var(--primary);
+    }
+    .form-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+    .add-form input[type="text"], .add-form select {
+      flex: 1; min-width: 120px;
+      padding: 11px 14px; border-radius: 50px; border: 1.5px solid var(--border);
+      font-family: 'Nunito', sans-serif; font-size: .95rem; color: var(--text);
+      background: var(--bg); outline: none; transition: border-color .2s;
+    }
+    .add-form input[type="text"]:focus, .add-form select:focus { border-color: var(--primary); }
+    .add-form input[type="number"] {
+      width: 80px; padding: 11px 10px; border-radius: 50px;
+      border: 1.5px solid var(--border); font-family: 'Nunito', sans-serif;
+      font-size: .95rem; color: var(--text); background: var(--bg); outline: none;
+      transition: border-color .2s;
+    }
+    .add-form input[type="number"]:focus { border-color: var(--primary); }
+    .add-form button {
+      padding: 11px 22px; border-radius: 50px; border: none;
+      background: var(--primary); color: #fff;
+      font-family: 'Nunito', sans-serif; font-size: .95rem; font-weight: 700;
+      cursor: pointer; white-space: nowrap; transition: background .2s;
+    }
+    .add-form button:hover { background: var(--primary-light); }
+
+    /* ── CATEGORY ────────────────────────────── */
+    .category-group { margin-bottom: 18px; }
+    .category-label {
+      display: flex; align-items: center; gap: 8px;
+      font-weight: 700; font-size: .88rem; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: .07em;
+      margin-bottom: 8px; padding: 0 4px;
+    }
+    .category-label span { font-size: 1.1rem; }
+
+    /* ── ITEM CARD ────────────────────────────── */
+    .item-card {
+      background: var(--surface); border-radius: var(--radius);
+      padding: 13px 15px; margin-bottom: 8px;
+      display: flex; align-items: center; gap: 12px;
+      box-shadow: var(--shadow); border: 1.5px solid transparent;
+      transition: opacity .25s, border-color .2s;
+    }
+    .item-card.is-new { animation: slideIn .22s ease; }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .item-card.ticked { opacity: .55; background: var(--surface2); border-color: var(--accent-light); }
+    .item-card input[type="checkbox"] {
+      width: 22px; height: 22px; accent-color: var(--accent);
+      cursor: pointer; flex-shrink: 0;
+    }
+    .item-info { flex: 1; min-width: 0; }
+    .item-name { font-weight: 600; font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .item-card.ticked .item-name { text-decoration: line-through; color: var(--text-muted); }
+    .item-meta { font-size: .8rem; color: var(--text-muted); margin-top: 2px; }
+    .item-qty {
+      background: var(--primary-faint); color: var(--primary);
+      border-radius: 20px; padding: 2px 10px; font-size: .8rem; font-weight: 700; flex-shrink: 0;
+    }
+    .item-fav {
+      background: none; border: none; cursor: pointer;
+      font-size: 1.2rem; padding: 4px; border-radius: 6px; flex-shrink: 0;
+      transition: transform .15s; line-height: 1;
+    }
+    .item-fav:hover { transform: scale(1.25); }
+    .item-delete {
+      background: none; border: none; cursor: pointer; color: var(--text-muted);
+      font-size: 1.1rem; padding: 4px; border-radius: 6px; flex-shrink: 0;
+      transition: color .15s, background .15s;
+    }
+    .item-delete:hover { color: var(--primary); background: var(--primary-faint); }
+
+    /* ── ACTION BAR ──────────────────────────── */
+    .action-bar { display: flex; justify-content: flex-end; margin-bottom: 12px; }
+    .action-bar button {
+      background: none; border: 1.5px solid var(--border); border-radius: 50px;
+      padding: 7px 18px; color: var(--text-muted); font-family: 'Nunito', sans-serif;
+      font-size: .85rem; cursor: pointer; transition: border-color .2s, color .2s;
+    }
+    .action-bar button:hover { border-color: var(--primary); color: var(--primary); }
+
+    /* ── EMPTY STATE ─────────────────────────── */
+    .empty { text-align: center; padding: 40px 20px; color: var(--text-muted); }
+    .empty .icon { font-size: 2.8rem; margin-bottom: 12px; }
+    .empty p { font-size: .95rem; }
+
+    /* ── FAVOURITES ──────────────────────────── */
+    .favs-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .favs-header h2 { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--primary); }
+    .favs-clear {
+      background: none; border: 1.5px solid var(--border); border-radius: 50px;
+      padding: 7px 16px; color: var(--text-muted); font-family: 'Nunito', sans-serif;
+      font-size: .82rem; cursor: pointer; transition: border-color .2s, color .2s;
+    }
+    .favs-clear:hover { border-color: var(--primary); color: var(--primary); }
+    .fav-card {
+      background: var(--surface); border-radius: var(--radius);
+      padding: 13px 15px; margin-bottom: 8px;
+      display: flex; align-items: center; gap: 12px;
+      box-shadow: var(--shadow); border: 1.5px solid var(--accent-light);
+      animation: slideIn .22s ease;
+    }
+    .fav-card .fav-star { font-size: 1.3rem; flex-shrink: 0; }
+    .fav-card .fav-info { flex: 1; min-width: 0; }
+    .fav-card .fav-name { font-weight: 600; font-size: 1rem; }
+    .fav-card .fav-meta { font-size: .8rem; color: var(--text-muted); margin-top: 2px; }
+    .fav-add-btn {
+      padding: 7px 16px; border-radius: 50px; border: none;
+      background: var(--primary); color: #fff;
+      font-family: 'Nunito', sans-serif; font-size: .82rem; font-weight: 700;
+      cursor: pointer; white-space: nowrap; transition: background .2s; flex-shrink: 0;
+    }
+    .fav-add-btn:hover { background: var(--primary-light); }
+    .fav-remove {
+      background: none; border: none; cursor: pointer; color: var(--text-muted);
+      font-size: 1.1rem; padding: 4px; border-radius: 6px; flex-shrink: 0;
+      transition: color .15s, background .15s;
+    }
+    .fav-remove:hover { color: var(--primary); background: var(--primary-faint); }
+
+    /* ── HISTORY ─────────────────────────────── */
+    .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .history-header h2 { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--primary); }
+    .history-filter select {
+      padding: 7px 14px; border-radius: 50px; border: 1.5px solid var(--border);
+      font-family: 'Nunito', sans-serif; font-size: .85rem; color: var(--text);
+      background: var(--bg); outline: none; cursor: pointer;
+    }
+    .history-clear {
+      background: none; border: 1.5px solid var(--border); border-radius: 50px;
+      padding: 7px 16px; color: var(--text-muted); font-family: 'Nunito', sans-serif;
+      font-size: .82rem; cursor: pointer; transition: border-color .2s, color .2s;
+    }
+    .history-clear:hover { border-color: var(--primary); color: var(--primary); }
+    .history-item {
+      background: var(--surface); border-radius: var(--radius);
+      padding: 12px 15px; margin-bottom: 8px;
+      display: flex; justify-content: space-between; align-items: center;
+      box-shadow: var(--shadow); font-size: .92rem;
+    }
+    .history-item .h-name { font-weight: 600; }
+    .history-item .h-meta { font-size: .78rem; color: var(--text-muted); margin-top: 2px; }
+    .history-badge {
+      background: var(--accent-light); color: var(--accent);
+      border-radius: 20px; padding: 3px 12px; font-size: .78rem; font-weight: 700;
+      white-space: nowrap;
+    }
+
+    /* ── EDIT ────────────────────────────────── */
+    .item-name { cursor: pointer; }
+    .item-edit {
+      background: none; border: none; cursor: pointer; color: var(--text-muted);
+      font-size: 1rem; padding: 4px; border-radius: 6px; flex-shrink: 0;
+      transition: background .15s;
+    }
+    .item-edit:hover { background: var(--primary-faint); }
+    .modal-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4);
+      z-index: 200; align-items: center; justify-content: center; padding: 16px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--surface); border-radius: 18px; padding: 24px 20px;
+      width: 340px; max-width: 100%; box-shadow: 0 8px 40px rgba(0,0,0,.18);
+    }
+    .modal h2 { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--primary); margin-bottom: 14px; }
+    .modal label { display: block; font-size: .8rem; font-weight: 700; color: var(--text-muted); margin: 0 0 4px 6px; }
+    .modal input, .modal select {
+      width: 100%; padding: 11px 14px; border-radius: 50px; border: 1.5px solid var(--border);
+      font-family: 'Nunito', sans-serif; font-size: 1rem; color: var(--text);
+      background: var(--bg); outline: none; margin-bottom: 12px;
+    }
+    .modal input:focus, .modal select:focus { border-color: var(--primary); }
+    .modal-actions { display: flex; gap: 8px; margin-top: 4px; }
+    .modal-actions button {
+      flex: 1; padding: 11px; border-radius: 50px; font-family: 'Nunito', sans-serif;
+      font-size: .95rem; font-weight: 700; cursor: pointer;
+    }
+    .modal-save { border: none; background: var(--primary); color: #fff; }
+    .modal-cancel { border: 1.5px solid var(--border); background: none; color: var(--text-muted); }
+
+    /* ── DRAG & DROP BETWEEN CATEGORIES ──────── */
+    .drag-handle {
+      flex-shrink: 0; cursor: grab; color: var(--text-muted); font-size: 1.2rem; line-height: 1;
+      padding: 6px 4px; margin: -6px 0 -6px -6px; touch-action: none;
+      user-select: none; -webkit-user-select: none;
+    }
+    .drag-handle:active { cursor: grabbing; }
+    .item-card.drag-source { opacity: .35; }
+    .drag-ghost {
+      position: fixed; z-index: 1000; pointer-events: none; background: var(--surface);
+      border-radius: var(--radius); box-shadow: 0 8px 24px rgba(0,0,0,.18); padding: 12px 16px;
+      font-family: 'Nunito', sans-serif; font-weight: 600; color: var(--text);
+      border: 2px solid var(--primary); max-width: 80vw; white-space: nowrap;
+      overflow: hidden; text-overflow: ellipsis; transform: translate(-50%, -50%);
+    }
+    .category-group.empty-drop { display: none; }
+    body.is-dragging .category-group.empty-drop { display: block; }
+    .drop-box {
+      padding: 14px; border-radius: var(--radius); border: 2px dashed var(--border);
+      color: var(--text-muted); font-size: .85rem; text-align: center;
+    }
+    body.is-dragging .category-group { border-radius: var(--radius); outline: 2px dashed transparent; outline-offset: 4px; transition: outline-color .1s, background .1s; }
+    body.is-dragging .category-group.drop-target { outline-color: var(--primary); background: var(--primary-faint); }
+    body.is-dragging { user-select: none; -webkit-user-select: none; }
+
+    /* ── LIVE STATUS ─────────────────────────── */
+    .live-status { display: inline-flex; align-items: center; gap: 6px; }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #d1d5db; flex-shrink: 0; }
+    .status-dot.online  { background: #bbf7d0; box-shadow: 0 0 0 2px rgba(255,255,255,.35); }
+    .status-dot.offline { background: #fca5a5; }
+    .item-meta .bought-by { color: var(--accent); font-weight: 600; }
+  </style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="splash">
+  <div class="splash-icon">🛒</div>
+  <h1>Da Silva<br>Grocery List</h1>
+  <p>Enter your name so the family knows who added or bought what</p>
+  <input type="text" id="splashName" placeholder="Your name" maxlength="30" autocomplete="given-name" />
+  <button id="startBtn">Let's go!</button>
+</div>
+
+<!-- NAME MODAL -->
+<div class="modal-overlay" id="nameModal" onclick="if (event.target === this) closeNameModal()">
+  <div class="modal">
+    <h2>👋 Change your name</h2>
+    <label for="nameInput">Your name</label>
+    <input type="text" id="nameInput" maxlength="30" />
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeNameModal()">Cancel</button>
+      <button class="modal-save" onclick="saveNameModal()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal-overlay" id="editModal" onclick="if (event.target === this) closeEdit()">
+  <div class="modal">
+    <h2>✏️ Edit item</h2>
+    <label for="editName">Item name</label>
+    <input type="text" id="editName" maxlength="60" />
+    <label for="editQty">Quantity</label>
+    <input type="number" id="editQty" min="1" />
+    <label for="editCat">Category</label>
+    <select id="editCat"></select>
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeEdit()">Cancel</button>
+      <button class="modal-save" onclick="saveEdit()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <h1>🛒 Da Silva Grocery List</h1>
+  <div class="sub" style="display:flex;justify-content:space-between;align-items:center;">
+    <span class="live-status"><span id="statusDot" class="status-dot"></span><span id="statusText">Connecting…</span></span>
+    <button onclick="downloadApp()" style="background:rgba(255,255,255,0.18);border:1.5px solid rgba(255,255,255,0.5);border-radius:20px;color:#fff;padding:4px 14px;font-size:.78rem;cursor:pointer;font-family:'Nunito',sans-serif;white-space:nowrap;">⬇ Download</button>
+  </div>
+  <div class="user-bar">
+    Shopping as: <strong id="displayName">—</strong>
+    <button id="changeNameBtn">Change</button>
+  </div>
+</header>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="active" id="tabShop" onclick="showTab('shop')">🛒 Shopping List</button>
+  <button id="tabFavs" onclick="showTab('favs')">⭐ Favourites</button>
+  <button id="tabHistory" onclick="showTab('history')">📋 History</button>
+</div>
+
+<!-- MAIN -->
+<main>
+
+  <!-- SHOPPING TAB -->
+  <div id="shopPane">
+    <div class="add-form">
+      <h2>+ Add to List</h2>
+      <div class="form-row">
+        <input type="text" id="itemName" placeholder="Item name..." maxlength="60" />
+        <input type="number" id="itemQty" min="1" value="1" style="width:70px;" />
+      </div>
+      <div class="form-row">
+        <select id="itemCat">
+          <option value="Other">🛒 Other</option>
+          <option value="Bakery">🍞 Bakery</option>
+          <option value="Bar">🍷 Bar</option>
+          <option value="Camping">⛺ Camping</option>
+          <option value="Clothing">👕 Clothing</option>
+          <option value="Dairy">🧀 Dairy</option>
+          <option value="Electrical">🔌 Electrical</option>
+          <option value="Frozen">❄️ Frozen</option>
+          <option value="Garden">🌱 Garden</option>
+          <option value="Gifts">🎁 Gifts</option>
+          <option value="Household">🧹 Household</option>
+          <option value="Meat & Fish">🥩 Meat & Fish</option>
+          <option value="Pantry">🥫 Pantry</option>
+          <option value="Personal Care">🧴 Personal Care</option>
+          <option value="Pets">🐾 Pets</option>
+          <option value="Pharmacy">💊 Pharmacy</option>
+          <option value="Produce">🥦 Produce</option>
+          <option value="Vehicles">🚗 Vehicles</option>
+        </select>
+        <button onclick="addItem()">Add</button>
+      </div>
+    </div>
+    <div class="action-bar">
+      <button onclick="clearTicked()">Remove ticked</button>
+    </div>
+    <div id="listContainer"></div>
+  </div>
+
+  <!-- FAVOURITES TAB -->
+  <div id="favsPane" style="display:none;">
+    <div class="favs-header">
+      <h2>⭐ Favourites</h2>
+      <button class="favs-clear" onclick="clearFavourites()">Clear all</button>
+    </div>
+    <div id="favsContainer"></div>
+  </div>
+
+  <!-- HISTORY TAB -->
+  <div id="historyPane" style="display:none;">
+    <div class="history-header">
+      <h2>📋 Purchase History</h2>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <div class="history-filter">
+          <select id="historyFilter" onchange="renderHistory()">
+            <option value="all">Everyone</option>
+          </select>
+        </div>
+        <button class="history-clear" onclick="clearHistory()">Clear all</button>
+      </div>
+    </div>
+    <div id="historyContainer"></div>
+  </div>
+
+</main>
+
+<script>
+  // ── LIVE DATABASE (shared Firebase, own "dasilva" section) ────────────────
+  firebase.initializeApp(FIREBASE_CONFIG);
+  const db            = firebase.database();
+  const rootRef       = db.ref('dasilva');
+  const itemsRef      = rootRef.child('items');
+  const historyRef    = rootRef.child('history');
+  const favouritesRef = rootRef.child('favourites');
+
+  // Old on-device storage (used once to move existing items online)
+  const STORE_KEY = 'nel_familie_inkopie_v1';
+  const HIST_KEY  = 'nel_familie_geskiedenis_v1';
+  const NAME_KEY  = 'da_silva_naam_v2';
+  const FAVS_KEY  = 'da_silva_favourites_v1';
+  const MIGRATED_KEY = 'da_silva_migrated_to_live_v1';
+
+  const CATS = [
+    { id: 'Other',         emoji: '🛒' },
+    { id: 'Bakery',        emoji: '🍞' },
+    { id: 'Bar',           emoji: '🍷' },
+    { id: 'Camping',       emoji: '⛺' },
+    { id: 'Clothing',      emoji: '👕' },
+    { id: 'Dairy',         emoji: '🧀' },
+    { id: 'Electrical',    emoji: '🔌' },
+    { id: 'Frozen',        emoji: '❄️' },
+    { id: 'Garden',        emoji: '🌱' },
+    { id: 'Gifts',         emoji: '🎁' },
+    { id: 'Household',     emoji: '🧹' },
+    { id: 'Meat & Fish',   emoji: '🥩' },
+    { id: 'Pantry',        emoji: '🥫' },
+    { id: 'Personal Care', emoji: '🧴' },
+    { id: 'Pets',          emoji: '🐾' },
+    { id: 'Pharmacy',      emoji: '💊' },
+    { id: 'Produce',       emoji: '🥦' },
+    { id: 'Vehicles',      emoji: '🚗' },
+  ];
+
+  var currentUser = localStorage.getItem(NAME_KEY) || '';
+  var items      = [];   // [{ id, name, qty, cat, ticked, addedBy, addedAt, boughtBy }]
+  var purchaseHistory    = [];
+  var favourites = [];
+  var dragState  = null;
+  var renderPending = false;
+  var seenIds = null; // item ids already shown, so only new items animate
+
+  const toList = obj => Object.entries(obj || {}).map(([id, v]) => ({ ...v, id }));
+  const nowStr = () => new Date().toLocaleString('en-ZA');
+
+  db.ref('.info/connected').on('value', snap => {
+    const online = snap.val() === true;
+    document.getElementById('statusDot').className = 'status-dot ' + (online ? 'online' : 'offline');
+    document.getElementById('statusText').textContent = online
+      ? 'Live — syncing with family'
+      : 'Offline — changes will sync when reconnected';
+  });
+
+  itemsRef.on('value', snap => { items = toList(snap.val()); renderList(); });
+  historyRef.on('value', snap => {
+    purchaseHistory = toList(snap.val()).sort((a, b) => (b.boughtTs || 0) - (a.boughtTs || 0));
+    if (document.getElementById('historyPane').style.display !== 'none') renderHistory();
+  });
+  favouritesRef.on('value', snap => {
+    favourites = toList(snap.val());
+    if (document.getElementById('favsPane').style.display !== 'none') renderFavourites();
+    renderList(); // refresh star states
+  });
+
+  // ── ONE-OFF MOVE OF OLD ON-DEVICE ITEMS TO THE LIVE LIST ────────────────
+  function migrateLocalData() {
+    if (localStorage.getItem(MIGRATED_KEY)) return;
+    try {
+      const oldItems = JSON.parse(localStorage.getItem(STORE_KEY) || '[]');
+      const oldFavs  = JSON.parse(localStorage.getItem(FAVS_KEY)  || '[]');
+      const oldHist  = JSON.parse(localStorage.getItem(HIST_KEY)  || '[]');
+      oldItems.filter(i => !i.ticked).forEach(i => itemsRef.push({
+        name: i.name, qty: i.qty || 1, cat: i.cat || 'Other', ticked: false,
+        addedBy: i.addedBy || '', addedAt: i.addedAt || nowStr()
+      }));
+      // only add favourites that aren't already online
+      favouritesRef.once('value', snap => {
+        const online = toList(snap.val());
+        oldFavs.filter(f => !online.some(o => o.name === f.name && o.cat === f.cat))
+          .forEach(f => favouritesRef.push({ name: f.name, qty: f.qty || 1, cat: f.cat || 'Other' }));
+      });
+      oldHist.forEach((h, idx) => historyRef.push({
+        name: h.name, qty: h.qty || 1, cat: h.cat || 'Other', addedBy: h.addedBy || '',
+        boughtBy: h.boughtBy || '', boughtAt: h.boughtAt || '', boughtTs: h.id || (Date.now() - idx)
+      }));
+    } catch (e) { /* old data unreadable — skip */ }
+    localStorage.setItem(MIGRATED_KEY, '1');
+  }
+
+  // ── SPLASH ──────────────────────────────────────────────────────────────
+  function startApp(name) {
+    if (!name || !name.trim()) return;
+    currentUser = name.trim();
+    localStorage.setItem(NAME_KEY, currentUser);
+    document.getElementById('displayName').textContent = currentUser;
+    document.getElementById('splash').style.display = 'none';
+  }
+
+  document.getElementById('startBtn').onclick = () => {
+    const el = document.getElementById('splashName');
+    if (el.value.trim()) startApp(el.value); else el.focus();
+  };
+  document.getElementById('splashName').addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('startBtn').click();
+  });
+
+  if (currentUser) {
+    document.getElementById('displayName').textContent = currentUser;
+    document.getElementById('splash').style.display = 'none';
+  }
+
+  document.getElementById('changeNameBtn').onclick = () => {
+    document.getElementById('nameInput').value = currentUser || '';
+    document.getElementById('nameModal').classList.add('open');
+    setTimeout(() => document.getElementById('nameInput').focus(), 100);
+  };
+  function closeNameModal() { document.getElementById('nameModal').classList.remove('open'); }
+  function saveNameModal() {
+    const val = document.getElementById('nameInput').value.trim();
+    if (!val) { document.getElementById('nameInput').focus(); return; }
+    startApp(val); closeNameModal();
+  }
+  document.getElementById('nameInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter')  saveNameModal();
+    if (e.key === 'Escape') closeNameModal();
+  });
+
+  // ── TABS ────────────────────────────────────────────────────────────────
+  function showTab(tab) {
+    document.getElementById('shopPane').style.display    = tab === 'shop'    ? '' : 'none';
+    document.getElementById('favsPane').style.display    = tab === 'favs'    ? '' : 'none';
+    document.getElementById('historyPane').style.display = tab === 'history' ? '' : 'none';
+    document.getElementById('tabShop').classList.toggle('active',    tab === 'shop');
+    document.getElementById('tabFavs').classList.toggle('active',    tab === 'favs');
+    document.getElementById('tabHistory').classList.toggle('active', tab === 'history');
+    if (tab === 'history') renderHistory();
+    if (tab === 'favs')    renderFavourites();
+  }
+
+  // ── ADD ITEM ─────────────────────────────────────────────────────────────
+  function addItem() {
+    const name = document.getElementById('itemName').value.trim();
+    const qty  = parseInt(document.getElementById('itemQty').value) || 1;
+    const cat  = document.getElementById('itemCat').value;
+    if (!name) { document.getElementById('itemName').focus(); return; }
+    itemsRef.push({ name, qty, cat, ticked: false, addedBy: currentUser || 'Unknown', addedAt: nowStr() });
+    document.getElementById('itemName').value = '';
+    document.getElementById('itemQty').value = 1;
+    document.getElementById('itemName').focus();
+  }
+  document.getElementById('itemName').addEventListener('keydown', e => { if (e.key === 'Enter') addItem(); });
+
+  // ── TICK / DELETE ────────────────────────────────────────────────────────
+  function toggleTick(id) {
+    const item = items.find(i => i.id === id);
+    if (!item) return;
+    const nowTicked = !item.ticked;
+    itemsRef.child(id).update({ ticked: nowTicked, boughtBy: nowTicked ? (currentUser || 'Unknown') : null });
+    if (nowTicked) {
+      historyRef.push({
+        name: item.name, qty: item.qty, cat: item.cat, addedBy: item.addedBy || '',
+        boughtBy: currentUser || 'Unknown', boughtAt: nowStr(), boughtTs: Date.now()
+      });
+    }
+  }
+  function deleteItem(id) { itemsRef.child(id).remove(); }
+  function clearTicked() {
+    const updates = {};
+    items.filter(i => i.ticked).forEach(i => updates[i.id] = null);
+    if (Object.keys(updates).length) itemsRef.update(updates);
+  }
+
+  // ── RENDER LIST ──────────────────────────────────────────────────────────
+  function renderList() {
+    if (dragState) { renderPending = true; return; } // don't redraw mid-drag
+    const container = document.getElementById('listContainer');
+    container.innerHTML = '';
+    const ordered = [...items.filter(i => !i.ticked), ...items.filter(i => i.ticked)];
+    if (ordered.length === 0) {
+      container.innerHTML = `<div class="empty"><div class="icon">🛒</div><p>List is empty — add some items!</p></div>`;
+      return;
+    }
+    const groups = {};
+    ordered.forEach(item => {
+      const c = CATS.some(x => x.id === item.cat) ? item.cat : 'Other';
+      if (!groups[c]) groups[c] = []; groups[c].push(item);
+    });
+    const prevSeen = seenIds;
+    seenIds = new Set(items.map(i => i.id));
+    CATS.forEach(cat => {
+      const grp = document.createElement('div');
+      grp.className = 'category-group';
+      grp.dataset.cat = cat.id;
+      grp.innerHTML = `<div class="category-label"><span>${cat.emoji}</span>${cat.id}</div>`;
+      if (!groups[cat.id]) {
+        // empty categories only appear (as drop zones) while dragging
+        grp.classList.add('empty-drop');
+        grp.innerHTML += `<div class="drop-box">Drop here</div>`;
+        container.appendChild(grp);
+        return;
+      }
+      groups[cat.id].forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'item-card' + (item.ticked ? ' ticked' : '');
+        card.dataset.id = item.id;
+        if (prevSeen && !prevSeen.has(item.id)) card.classList.add('is-new');
+        const alreadyFav = favourites.some(f => f.name === item.name && f.cat === item.cat);
+        const favBtn = item.ticked ? `<button class="item-fav" onclick="addToFavourites('${item.id}')" title="${alreadyFav ? 'Already in Favourites' : 'Save to Favourites'}">${alreadyFav ? '⭐' : '☆'}</button>` : '';
+        const meta = `Added by ${escHtml(item.addedBy || '?')}` +
+          (item.ticked && item.boughtBy ? ` · <span class="bought-by">✓ bought by ${escHtml(item.boughtBy)}</span>` : ` · ${escHtml(item.addedAt || '')}`);
+        card.innerHTML = `
+          <span class="drag-handle" onpointerdown="startDrag(event, '${item.id}')" title="Drag to another category">⠿</span>
+          <input type="checkbox" ${item.ticked ? 'checked' : ''} onchange="toggleTick('${item.id}')" />
+          <div class="item-info">
+            <div class="item-name" onclick="openEdit('${item.id}')" title="Tap to edit">${escHtml(item.name)}</div>
+            <div class="item-meta">${meta}</div>
+          </div>
+          <div class="item-qty">x${escHtml(item.qty)}</div>
+          ${favBtn}
+          <button class="item-edit" onclick="openEdit('${item.id}')" title="Edit">✏️</button>
+          <button class="item-delete" onclick="deleteItem('${item.id}')" title="Remove">✕</button>`;
+        grp.appendChild(card);
+      });
+      container.appendChild(grp);
+    });
+  }
+
+  // ── EDIT ITEM ─────────────────────────────────────────────────────────────
+  let editingId = null;
+  function openEdit(id) {
+    const item = items.find(i => i.id === id);
+    if (!item) return;
+    editingId = id;
+    const sel = document.getElementById('editCat');
+    sel.innerHTML = CATS.map(c => `<option value="${escHtml(c.id)}">${c.emoji} ${escHtml(c.id)}</option>`).join('');
+    sel.value = CATS.some(c => c.id === item.cat) ? item.cat : 'Other';
+    document.getElementById('editName').value = item.name;
+    document.getElementById('editQty').value  = item.qty;
+    document.getElementById('editModal').classList.add('open');
+    setTimeout(() => document.getElementById('editName').focus(), 100);
+  }
+  function closeEdit() {
+    editingId = null;
+    document.getElementById('editModal').classList.remove('open');
+  }
+  function saveEdit() {
+    const name = document.getElementById('editName').value.trim();
+    if (!name) { document.getElementById('editName').focus(); return; }
+    if (editingId && items.some(i => i.id === editingId)) {
+      itemsRef.child(editingId).update({
+        name,
+        qty: parseInt(document.getElementById('editQty').value) || 1,
+        cat: document.getElementById('editCat').value
+      });
+    }
+    closeEdit();
+  }
+  ['editName', 'editQty'].forEach(elId =>
+    document.getElementById(elId).addEventListener('keydown', e => {
+      if (e.key === 'Enter')  saveEdit();
+      if (e.key === 'Escape') closeEdit();
+    })
+  );
+
+  // ── DRAG & DROP BETWEEN CATEGORIES (mouse + touch) ───────────────────────
+  function startDrag(e, id) {
+    const item = items.find(i => i.id === id);
+    if (!item) return;
+    e.preventDefault();
+    const row = e.target.closest('.item-card');
+    const ghost = document.createElement('div');
+    ghost.className = 'drag-ghost';
+    ghost.textContent = item.name;
+    document.body.appendChild(ghost);
+    row.classList.add('drag-source');
+    document.body.classList.add('is-dragging');
+    dragState = { id, ghost, row, target: null, x: e.clientX, y: e.clientY };
+    moveGhost(e.clientX, e.clientY);
+    window.addEventListener('pointermove', onDragMove, { passive: false });
+    window.addEventListener('pointerup', endDrag);
+    window.addEventListener('pointercancel', finishDrag);
+    dragState.scrollTimer = setInterval(autoScroll, 16);
+  }
+  function moveGhost(x, y) {
+    dragState.ghost.style.left = x + 'px';
+    dragState.ghost.style.top  = y + 'px';
+  }
+  function onDragMove(e) {
+    if (!dragState) return;
+    e.preventDefault();
+    dragState.x = e.clientX; dragState.y = e.clientY;
+    moveGhost(e.clientX, e.clientY);
+    const el = document.elementFromPoint(e.clientX, e.clientY);
+    const group = el && el.closest('#listContainer .category-group');
+    if (group !== dragState.target) {
+      if (dragState.target) dragState.target.classList.remove('drop-target');
+      if (group) group.classList.add('drop-target');
+      dragState.target = group;
+    }
+  }
+  function autoScroll() {
+    if (!dragState) return;
+    const top = 170, edge = 70, h = window.innerHeight; // top allows for the sticky header + tabs
+    if (dragState.y < top) window.scrollBy(0, -12);
+    else if (dragState.y > h - edge) window.scrollBy(0, 12);
+  }
+  function finishDrag() {
+    if (!dragState) return;
+    window.removeEventListener('pointermove', onDragMove);
+    window.removeEventListener('pointerup', endDrag);
+    window.removeEventListener('pointercancel', finishDrag);
+    clearInterval(dragState.scrollTimer);
+    dragState.ghost.remove();
+    dragState.row.classList.remove('drag-source');
+    if (dragState.target) dragState.target.classList.remove('drop-target');
+    document.body.classList.remove('is-dragging');
+    dragState = null;
+    if (renderPending) { renderPending = false; renderList(); }
+  }
+  function endDrag() {
+    if (!dragState) return;
+    const { id, target } = dragState;
+    const newCat = target && target.dataset.cat;
+    finishDrag();
+    const item = items.find(i => i.id === id);
+    if (newCat && item && item.cat !== newCat) itemsRef.child(id).update({ cat: newCat });
+  }
+
+  // ── FAVOURITES ────────────────────────────────────────────────────────────
+  function addToFavourites(itemId) {
+    const item = items.find(i => i.id === itemId);
+    if (!item) return;
+    if (favourites.some(f => f.name === item.name && f.cat === item.cat)) return;
+    favouritesRef.push({ name: item.name, qty: item.qty, cat: item.cat, savedBy: currentUser || 'Unknown' });
+  }
+  function removeFromFavourites(favId) { favouritesRef.child(favId).remove(); }
+  function addFavToList(favId) {
+    const fav = favourites.find(f => f.id === favId);
+    if (!fav) return;
+    itemsRef.push({ name: fav.name, qty: fav.qty || 1, cat: fav.cat, ticked: false, addedBy: currentUser || 'Unknown', addedAt: nowStr() });
+    showTab('shop');
+  }
+  function clearFavourites() {
+    if (!confirm('Clear all favourites? This clears them for everyone.')) return;
+    favouritesRef.remove();
+  }
+  function renderFavourites() {
+    const container = document.getElementById('favsContainer');
+    container.innerHTML = '';
+    if (favourites.length === 0) {
+      container.innerHTML = `<div class="empty"><div class="icon">⭐</div><p>No favourites yet — tick off a purchased item and tap ☆ to save it here.</p></div>`;
+      return;
+    }
+    const groups = {};
+    favourites.forEach(f => {
+      const c = CATS.some(x => x.id === f.cat) ? f.cat : 'Other';
+      if (!groups[c]) groups[c] = []; groups[c].push(f);
+    });
+    CATS.forEach(cat => {
+      if (!groups[cat.id]) return;
+      const grp = document.createElement('div');
+      grp.className = 'category-group';
+      grp.innerHTML = `<div class="category-label"><span>${cat.emoji}</span>${cat.id}</div>`;
+      groups[cat.id].forEach(fav => {
+        const card = document.createElement('div');
+        card.className = 'fav-card';
+        card.innerHTML = `
+          <span class="fav-star">⭐</span>
+          <div class="fav-info">
+            <div class="fav-name">${escHtml(fav.name)}</div>
+            <div class="fav-meta">${escHtml(fav.cat)} · qty: ${escHtml(fav.qty)}</div>
+          </div>
+          <button class="fav-add-btn" onclick="addFavToList('${fav.id}')">+ Add to List</button>
+          <button class="fav-remove" onclick="removeFromFavourites('${fav.id}')" title="Remove">✕</button>`;
+        grp.appendChild(card);
+      });
+      container.appendChild(grp);
+    });
+  }
+
+  // ── HISTORY ───────────────────────────────────────────────────────────────
+  function renderHistory() {
+    const sel = document.getElementById('historyFilter');
+    const prev = sel.value || 'all';
+    const people = [...new Set(purchaseHistory.map(h => h.boughtBy).filter(Boolean))];
+    sel.innerHTML = '<option value="all">Everyone</option>';
+    people.forEach(p => { const o = document.createElement('option'); o.value = p; o.textContent = p; sel.appendChild(o); });
+    sel.value = people.includes(prev) ? prev : 'all';
+    const filter = sel.value;
+    const container = document.getElementById('historyContainer');
+    container.innerHTML = '';
+    const filtered = filter === 'all' ? purchaseHistory : purchaseHistory.filter(h => h.boughtBy === filter);
+    if (filtered.length === 0) {
+      container.innerHTML = `<div class="empty"><div class="icon">📋</div><p>No purchase purchaseHistory yet.</p></div>`;
+      return;
+    }
+    filtered.forEach(h => {
+      const div = document.createElement('div');
+      div.className = 'history-item';
+      div.innerHTML = `
+        <div>
+          <div class="h-name">${escHtml(h.name)} <span style="color:var(--text-muted);font-weight:400;">x${escHtml(h.qty)}</span></div>
+          <div class="h-meta">${escHtml(h.cat)} · Bought by ${escHtml(h.boughtBy)} · ${escHtml(h.boughtAt)}</div>
+        </div>
+        <div class="history-badge">✓ Bought</div>`;
+      container.appendChild(div);
+    });
+  }
+  function clearHistory() {
+    if (!confirm('Clear all history? This clears it for everyone.')) return;
+    historyRef.remove();
+  }
+
+  function escHtml(str) {
+    return String(str ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // ── DOWNLOAD ──────────────────────────────────────────────────────────────
+  function downloadApp() {
+    const blob = new Blob([document.documentElement.outerHTML], { type: 'text/html' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'da-silva-grocery-list.html';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  // ── SERVICE WORKER ────────────────────────────────────────────────────────
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  }
+
+  // ── INIT ──────────────────────────────────────────────────────────────────
+  migrateLocalData();
+</script>
+</body>
+</html>
