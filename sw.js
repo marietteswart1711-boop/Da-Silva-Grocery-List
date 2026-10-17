@@ -1,4 +1,4 @@
-const CACHE = 'da-silva-v2';
+const CACHE = 'da-silva-v3';
 const FILES = [
   './da-silva-grocery-list.html',
   './manifest.json',
@@ -21,7 +21,24 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
-  e.respondWith(
-    caches.match(e.request).then(r => r || fetch(e.request).catch(() => caches.match('./da-silva-grocery-list.html')))
-  );
+  const req = e.request;
+  if (req.method !== 'GET') return;
+  const isPage = req.mode === 'navigate' || req.url.endsWith('.html');
+
+  if (isPage) {
+    // Network first for the app page, so updates show up straight away; cached copy when offline
+    e.respondWith(
+      fetch(req)
+        .then(res => {
+          const copy = res.clone();
+          caches.open(CACHE).then(c => c.put(req, copy));
+          return res;
+        })
+        .catch(() => caches.match(req).then(r => r || caches.match('./da-silva-grocery-list.html')))
+    );
+    return;
+  }
+
+  // Cache first for icons and other static files
+  e.respondWith(caches.match(req).then(r => r || fetch(req)));
 });
